@@ -9,11 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class HmsBackendApplicationTests {
 
-    @Autowired
-    private HmsBackendApplication context;
+	@Autowired
+	private HmsBackendApplication context;
 
-    @Test
-    void contextLoads() {
-        assertThat(context).isNotNull();
-    }
+	@Test
+	void contextLoads() {
+		assertThat(context).isNotNull();
+	}
 }

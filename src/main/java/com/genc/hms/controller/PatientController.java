@@ -40,17 +40,17 @@ public class PatientController {
 	private final PatientService patientService;
 	private final DoctorService doctorService;
 
-    // Use constructor injection
+	// Use constructor injection
 	public PatientController(PatientService patientService, DoctorService doctorService) {
 		this.patientService = patientService;
 		this.doctorService = doctorService;
 	}
 
-    // Remove: getAuthorizedPatientId helper method
+	// Remove: getAuthorizedPatientId helper method
 
 	/**
-	 * Helper method to enforce that the authenticated user is a PATIENT and retrieve
-	 * their Patient ID.
+	 * Helper method to enforce that the authenticated user is a PATIENT and
+	 * retrieve their Patient ID.
 	 */
 	private Long getAuthenticatedPatientId(@AuthenticationPrincipal User currentUser) {
 		// Ensure the user has the PATIENT role AND the patient profile link exists
@@ -69,7 +69,7 @@ public class PatientController {
 	 */
 	@GetMapping("/me")
 	public ResponseEntity<PatientResponseDTO> getPatientProfile(@AuthenticationPrincipal User currentUser) {
-		
+
 		// 1. Authorization check: Ensures the user is a PATIENT and retrieves their ID
 		Long patientId = getAuthenticatedPatientId(currentUser);
 
@@ -82,8 +82,11 @@ public class PatientController {
 	 */
 	@PutMapping("/me")
 	public ResponseEntity<PatientResponseDTO> updatePatientProfile(
-			@Valid @RequestBody PatientUpdateRequestDTO updateDTO,
-			@AuthenticationPrincipal User currentUser) { // Inject User instead of Session
+			@Valid @RequestBody PatientUpdateRequestDTO updateDTO, @AuthenticationPrincipal User currentUser) { // Inject
+																												// User
+																												// instead
+																												// of
+																												// Session
 
 		// 1. Authorization check: Ensures the user is a PATIENT and retrieves their ID
 		Long patientId = getAuthenticatedPatientId(currentUser);
@@ -107,16 +110,16 @@ public class PatientController {
 	}
 
 	/**
-	 * GET /api/patients/{id} - Retrieves a patient by their Patient ID.
-     * Note: This method allows ADMINs/Staff to fetch any patient. 
-     * If a PATIENT calls this, SecurityConfig or an internal check should limit them to their own ID.
+	 * GET /api/patients/{id} - Retrieves a patient by their Patient ID. Note: This
+	 * method allows ADMINs/Staff to fetch any patient. If a PATIENT calls this,
+	 * SecurityConfig or an internal check should limit them to their own ID.
 	 */
 	@GetMapping("/{id}")
 	public ResponseEntity<PatientResponseDTO> getPatientFromId(@PathVariable Long id) {
-		// Note: The previous logic relied on manual DTO conversion, which is fine, 
+		// Note: The previous logic relied on manual DTO conversion, which is fine,
 		// but using a service method that returns the DTO is cleaner.
 
-        // If your service doesn't return DTO, keep the DTO conversion logic here:
+		// If your service doesn't return DTO, keep the DTO conversion logic here:
 		Optional<Patient> patientOptional = patientService.findById(id);
 
 		if (patientOptional.isEmpty()) {
@@ -132,7 +135,7 @@ public class PatientController {
 		logger.info("Retrieved details of patient {}", id);
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/find-doctor")
 	public ResponseEntity<List<DoctorResponseDTO>> getAllOrSearchDoctors(
 			@RequestParam(required = false) String keyword) {

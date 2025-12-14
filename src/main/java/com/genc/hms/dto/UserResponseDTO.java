@@ -24,7 +24,7 @@ public class UserResponseDTO {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	
+
 	public Long getRoleId() {
 		return roleId;
 	}

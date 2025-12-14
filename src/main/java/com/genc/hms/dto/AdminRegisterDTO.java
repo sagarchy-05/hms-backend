@@ -9,7 +9,7 @@ public class AdminRegisterDTO {
 	@Email(message = "Email format is invalid.")
 	@Size(max = 100, message = "Email cannot exceed 100 characters.")
 	private String email;
-	
+
 	@NotBlank(message = "Password is required.")
 	@Size(min = 5, max = 255, message = "Password must be at least 5 characters.")
 	private String password;

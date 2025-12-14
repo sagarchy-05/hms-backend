@@ -36,10 +36,10 @@ public class DoctorProfileUpdateDTO {
 	@NotNull(message = "Doctor availability schedule is required.")
 	private List<DoctorAvailabilityDTO> doctorAvailabilities;
 
-    // Constructors
-    public DoctorProfileUpdateDTO() {
-    	//default constructor
-    }
+	// Constructors
+	public DoctorProfileUpdateDTO() {
+		// default constructor
+	}
 
 	// Getters and Setters
 	public String getName() {

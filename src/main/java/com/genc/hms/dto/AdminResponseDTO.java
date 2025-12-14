@@ -3,7 +3,7 @@ package com.genc.hms.dto;
 public class AdminResponseDTO {
 	private Long userId;
 	private String email;
-	
+
 	public AdminResponseDTO() {
 		super();
 	}
@@ -29,7 +29,5 @@ public class AdminResponseDTO {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	
 
 }

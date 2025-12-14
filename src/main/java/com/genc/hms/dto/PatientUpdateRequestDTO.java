@@ -10,78 +10,78 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class PatientUpdateRequestDTO {
-    
-    @NotBlank(message = "Name is required.")
-    @Size(max = 100, message = "Name cannot exceed 100 characters.")
-    private String name;
 
-    @NotNull(message = "Date of Birth is required.")
-    private LocalDate dob;
-    
-    @NotBlank(message = "Contact number is required.")
-    @Pattern(regexp = "^\\d{10}$", message = "Contact number must be exactly 10 digits.")
-    private String contactNumber;
+	@NotBlank(message = "Name is required.")
+	@Size(max = 100, message = "Name cannot exceed 100 characters.")
+	private String name;
 
-    @NotBlank(message = "Address is required.")
-    private String address;
+	@NotNull(message = "Date of Birth is required.")
+	private LocalDate dob;
 
-    @NotNull(message = "Gender is required.")
-    private Gender gender;
+	@NotBlank(message = "Contact number is required.")
+	@Pattern(regexp = "^\\d{10}$", message = "Contact number must be exactly 10 digits.")
+	private String contactNumber;
 
-    // Medical history can be nullable or empty
-    private String medicalHistory;
+	@NotBlank(message = "Address is required.")
+	private String address;
 
-    // Constructors
-    public PatientUpdateRequestDTO() {
-    	//default constructor
-    }
+	@NotNull(message = "Gender is required.")
+	private Gender gender;
 
-    // Getters and Setters
-    public String getName() {
-        return name;
-    }
+	// Medical history can be nullable or empty
+	private String medicalHistory;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	// Constructors
+	public PatientUpdateRequestDTO() {
+		// default constructor
+	}
 
-    public LocalDate getDob() {
-        return dob;
-    }
+	// Getters and Setters
+	public String getName() {
+		return name;
+	}
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getContactNumber() {
-        return contactNumber;
-    }
+	public LocalDate getDob() {
+		return dob;
+	}
 
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
+	public void setDob(LocalDate dob) {
+		this.dob = dob;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public String getContactNumber() {
+		return contactNumber;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
 
-    public Gender getGender() {
-        return gender;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public String getMedicalHistory() {
-        return medicalHistory;
-    }
+	public Gender getGender() {
+		return gender;
+	}
 
-    public void setMedicalHistory(String medicalHistory) {
-        this.medicalHistory = medicalHistory;
-    }
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+
+	public String getMedicalHistory() {
+		return medicalHistory;
+	}
+
+	public void setMedicalHistory(String medicalHistory) {
+		this.medicalHistory = medicalHistory;
+	}
 }

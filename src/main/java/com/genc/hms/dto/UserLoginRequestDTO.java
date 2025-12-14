@@ -13,7 +13,7 @@ public class UserLoginRequestDTO {
 	private String password;
 
 	public UserLoginRequestDTO() {
-		//default constructor
+		// default constructor
 	}
 
 	public String getEmail() {

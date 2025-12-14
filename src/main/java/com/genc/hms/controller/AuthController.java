@@ -48,18 +48,18 @@ public class AuthController {
 	// REVISED registerPatient method in AuthController
 	@PostMapping("/register")
 	public ResponseEntity<UserResponseDTO> registerPatient(
-	        @Valid @RequestBody PatientRegisterRequestDTO registrationDetails) {
+			@Valid @RequestBody PatientRegisterRequestDTO registrationDetails) {
 
-	    // Keep CONFLICT check here as it's a specific business rule return
-	    if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
-	        logger.warn("Registration attempt with existing email: {}", registrationDetails.getEmail());
-	        // Custom exception (e.g., DuplicateEmailException) could replace this check
-	        return ResponseEntity.status(HttpStatus.CONFLICT).build(); 
-	    }
+		// Keep CONFLICT check here as it's a specific business rule return
+		if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
+			logger.warn("Registration attempt with existing email: {}", registrationDetails.getEmail());
+			// Custom exception (e.g., DuplicateEmailException) could replace this check
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 
-	    UserResponseDTO responseDTO = userService.registerPatient(registrationDetails);
-	    logger.info("New patient registered with userId: {}", responseDTO.getUserId());
-	    return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+		UserResponseDTO responseDTO = userService.registerPatient(registrationDetails);
+		logger.info("New patient registered with userId: {}", responseDTO.getUserId());
+		return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 	}
 
 	// ----------------- JWT Login -----------------

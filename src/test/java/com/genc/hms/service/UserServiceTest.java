@@ -20,72 +20,67 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+	@Mock
+	private UserRepository userRepository;
 
-    @Mock
-    private CustomPasswordEncoder customPasswordEncoder;
+	@Mock
+	private CustomPasswordEncoder customPasswordEncoder;
 
-    @InjectMocks
-    private UserService userService;
+	@InjectMocks
+	private UserService userService;
 
-    private User mockUser;
+	private User mockUser;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockUser = new User();
-        mockUser.setUserId(1L);
-        mockUser.setEmail("test@example.com");
-        mockUser.setPassword("encodedPass");
-        mockUser.setRole(Role.PATIENT); // use whatever enum or role type you have
-    }
+	@BeforeEach
+	void setUp() {
+		MockitoAnnotations.openMocks(this);
+		mockUser = new User();
+		mockUser.setUserId(1L);
+		mockUser.setEmail("test@example.com");
+		mockUser.setPassword("encodedPass");
+		mockUser.setRole(Role.PATIENT); // use whatever enum or role type you have
+	}
 
-    @Test
-    void testLogin_Success() {
-        // Arrange
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
-        when(customPasswordEncoder.matches("password123", "encodedPass")).thenReturn(true);
+	@Test
+	void testLogin_Success() {
+		// Arrange
+		when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
+		when(customPasswordEncoder.matches("password123", "encodedPass")).thenReturn(true);
 
-        // Act
-        UserLoginResponseDTO response = userService.login("test@example.com", "password123");
+		// Act
+		UserLoginResponseDTO response = userService.login("test@example.com", "password123");
 
-        // Assert
-        assertNotNull(response);
-        assertEquals("test@example.com", response.getEmail());
-        assertEquals("Login successful!", response.getMessage());
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-    }
+		// Assert
+		assertNotNull(response);
+		assertEquals("test@example.com", response.getEmail());
+		assertEquals("Login successful!", response.getMessage());
+		verify(userRepository, times(1)).findByEmail("test@example.com");
+	}
 
-    @Test
-    void testLogin_InvalidEmail_ThrowsException() {
-        // Arrange
-        when(userRepository.findByEmail("wrong@example.com")).thenReturn(Optional.empty());
+	@Test
+	void testLogin_InvalidEmail_ThrowsException() {
+		// Arrange
+		when(userRepository.findByEmail("wrong@example.com")).thenReturn(Optional.empty());
 
-        // Act & Assert
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> userService.login("wrong@example.com", "password123")
-        );
+		// Act & Assert
+		ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+				() -> userService.login("wrong@example.com", "password123"));
 
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
-        assertEquals("Invalid email or password", exception.getReason());
-    }
+		assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+		assertEquals("Invalid email or password", exception.getReason());
+	}
 
-    @Test
-    void testLogin_InvalidPassword_ThrowsException() {
-        // Arrange
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
-        when(customPasswordEncoder.matches("wrongPass", "encodedPass")).thenReturn(false);
+	@Test
+	void testLogin_InvalidPassword_ThrowsException() {
+		// Arrange
+		when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
+		when(customPasswordEncoder.matches("wrongPass", "encodedPass")).thenReturn(false);
 
-        // Act & Assert
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> userService.login("test@example.com", "wrongPass")
-        );
+		// Act & Assert
+		ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+				() -> userService.login("test@example.com", "wrongPass"));
 
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
-        assertEquals("Invalid email or password", exception.getReason());
-    }
+		assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+		assertEquals("Invalid email or password", exception.getReason());
+	}
 }
-

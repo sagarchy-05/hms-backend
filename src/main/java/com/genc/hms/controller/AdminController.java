@@ -45,8 +45,9 @@ import com.genc.hms.service.UserService;
 import jakarta.validation.Valid;
 
 /**
- * REST Controller for administrator-level operations in the Hospital Management System.
- * All endpoints are secured by @PreAuthorize("hasRole('ADMIN')") and use JWT context.
+ * REST Controller for administrator-level operations in the Hospital Management
+ * System. All endpoints are secured by @PreAuthorize("hasRole('ADMIN')") and
+ * use JWT context.
  */
 @RestController
 @CrossOrigin
@@ -54,281 +55,290 @@ import jakarta.validation.Valid;
 @PreAuthorize("hasRole('ADMIN')") // 🚨 SECURES ALL METHODS IN THIS CONTROLLER
 public class AdminController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
-    private final PatientService patientService;
-    private final DoctorService doctorService;
-    private final AdminService adminService;
-    private final UserService userService;
-    private final AppointmentService appointmentService;
-    private final BillingService billingService;
+	private final PatientService patientService;
+	private final DoctorService doctorService;
+	private final AdminService adminService;
+	private final UserService userService;
+	private final AppointmentService appointmentService;
+	private final BillingService billingService;
 
-    // 🚨 Use full constructor injection for all dependencies
-    public AdminController(
-            DoctorService doctorService, 
-            PatientService patientService,
-            AdminService adminService,
-            UserService userService,
-            AppointmentService appointmentService,
-            BillingService billingService) {
-        this.doctorService = doctorService;
-        this.patientService = patientService;
-        this.adminService = adminService;
-        this.userService = userService;
-        this.appointmentService = appointmentService;
-        this.billingService = billingService;
-    }
+	// 🚨 Use full constructor injection for all dependencies
+	public AdminController(DoctorService doctorService, PatientService patientService, AdminService adminService,
+			UserService userService, AppointmentService appointmentService, BillingService billingService) {
+		this.doctorService = doctorService;
+		this.patientService = patientService;
+		this.adminService = adminService;
+		this.userService = userService;
+		this.appointmentService = appointmentService;
+		this.billingService = billingService;
+	}
 
-    // ===================== I. USER MANAGEMENT =====================
-    
-    /** 🚨 All security checks (isAdmin) are now handled by @PreAuthorize on the class level. **/
-    
-    @GetMapping("/users")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers(@AuthenticationPrincipal User adminUser) {
-        logger.info("Admin [{}] requested all users", adminUser.getUserId());
-        return ResponseEntity.ok(adminService.getAllUsers());
-    }
+	// ===================== I. USER MANAGEMENT =====================
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
-        logger.info("Admin [{}] requested user with id {}", adminUser.getUserId(), id);
-        
-        // Assuming userService.getUserById throws ResourceNotFoundException on null
-        UserResponseDTO user = userService.getUserById(id); 
-        return ResponseEntity.ok(user);
-    }
+	/**
+	 * 🚨 All security checks (isAdmin) are now handled by @PreAuthorize on the
+	 * class level.
+	 **/
 
-    @PutMapping("/users/{userId}/identity")
-    public ResponseEntity<UserResponseDTO> updateUserIdentity(
-            @PathVariable Long userId,
-            @Valid @RequestBody UserUpdateRoleAndEmailDTO updateDTO,
-            @AuthenticationPrincipal User adminUser) {
+	@GetMapping("/users")
+	public ResponseEntity<List<UserResponseDTO>> getAllUsers(@AuthenticationPrincipal User adminUser) {
+		logger.info("Admin [{}] requested all users", adminUser.getUserId());
+		return ResponseEntity.ok(adminService.getAllUsers());
+	}
 
-        // Check for email conflict (needs to remain in controller or be delegated to a validation layer)
-        if (updateDTO.getEmail() != null && userService.findByEmail(updateDTO.getEmail())
-                .filter(u -> !u.getUserId().equals(userId)).isPresent()) {
-            logger.warn("Admin [{}] attempted to update user [{}] with duplicate email {}",
-                    adminUser.getUserId(), userId, updateDTO.getEmail());
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+	@GetMapping("/users/{id}")
+	public ResponseEntity<UserResponseDTO> getUserById(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
+		logger.info("Admin [{}] requested user with id {}", adminUser.getUserId(), id);
 
-        // Service should return DTO or throw ResourceNotFoundException
-        UserResponseDTO updatedUser = adminService.updateUserIdentity(userId, updateDTO);
-        logger.info("Admin [{}] updated user [{}]", adminUser.getUserId(), userId);
-        return ResponseEntity.ok(updatedUser);
-    }
+		// Assuming userService.getUserById throws ResourceNotFoundException on null
+		UserResponseDTO user = userService.getUserById(id);
+		return ResponseEntity.ok(user);
+	}
 
-    @PostMapping("/users/{userId}/reset-password")
-    public ResponseEntity<String> resetPassword(@PathVariable Long userId, @RequestBody String password, @AuthenticationPrincipal User adminUser) {
-        
-        // Service should throw ResourceNotFoundException if user ID is invalid
-        adminService.resetUserPassword(userId, password);
-        logger.info("Admin [{}] reset password for user [{}]", adminUser.getUserId(), userId);
-        return ResponseEntity.ok("Password successfully reset for user ID: " + userId);
-    }
+	@PutMapping("/users/{userId}/identity")
+	public ResponseEntity<UserResponseDTO> updateUserIdentity(@PathVariable Long userId,
+			@Valid @RequestBody UserUpdateRoleAndEmailDTO updateDTO, @AuthenticationPrincipal User adminUser) {
 
-    @DeleteMapping("/users/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @AuthenticationPrincipal User adminUser) {
-        
-        // Service should throw ResourceNotFoundException if deletion target is invalid
-        adminService.deleteUser(userId);
-        logger.info("Admin [{}] deleted user [{}]", adminUser.getUserId(), userId);
-        return ResponseEntity.noContent().build();
-    }
+		// Check for email conflict (needs to remain in controller or be delegated to a
+		// validation layer)
+		if (updateDTO.getEmail() != null && userService.findByEmail(updateDTO.getEmail())
+				.filter(u -> !u.getUserId().equals(userId)).isPresent()) {
+			logger.warn("Admin [{}] attempted to update user [{}] with duplicate email {}", adminUser.getUserId(),
+					userId, updateDTO.getEmail());
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 
-    // ===================== II. REGISTRATION =====================
-    
-    // Note: The /admin/register path needs to be updated to /register to follow REST convention /api/admin/register
+		// Service should return DTO or throw ResourceNotFoundException
+		UserResponseDTO updatedUser = adminService.updateUserIdentity(userId, updateDTO);
+		logger.info("Admin [{}] updated user [{}]", adminUser.getUserId(), userId);
+		return ResponseEntity.ok(updatedUser);
+	}
 
-    @PostMapping("/register")
-    public ResponseEntity<AdminResponseDTO> registerAdmin(@Valid @RequestBody AdminRegisterDTO registrationDetails, @AuthenticationPrincipal User adminUser) {
-        
-        // Only allow first admin to register without being authenticated (handled in service or security config)
-        // For existing admins, the @PreAuthorize handles the role check.
-        Long count = adminService.getCount();
-        if (count != 0 && adminUser == null) { // This block is hard to implement cleanly here. Better handled in the Service/Security layer
-             throw new AccessDeniedException("Only the first admin can be registered without authorization.");
-        }
-        
-        if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+	@PostMapping("/users/{userId}/reset-password")
+	public ResponseEntity<String> resetPassword(@PathVariable Long userId, @RequestBody String password,
+			@AuthenticationPrincipal User adminUser) {
 
-        AdminResponseDTO dto = userService.registerAdmin(registrationDetails);
-        logger.info("Admin [{}] registered new admin [{}]", adminUser != null ? adminUser.getUserId() : "SYSTEM", dto.getUserId());
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
-    }
+		// Service should throw ResourceNotFoundException if user ID is invalid
+		adminService.resetUserPassword(userId, password);
+		logger.info("Admin [{}] reset password for user [{}]", adminUser.getUserId(), userId);
+		return ResponseEntity.ok("Password successfully reset for user ID: " + userId);
+	}
 
-    @PostMapping("/doctors/register")
-    public ResponseEntity<UserResponseDTO> registerDoctor(@Valid @RequestBody DoctorRegisterRequestDTO registrationDetails, @AuthenticationPrincipal User adminUser) {
-        if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+	@DeleteMapping("/users/{userId}")
+	public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @AuthenticationPrincipal User adminUser) {
 
-        UserResponseDTO dto = adminService.registerNewDoctor(registrationDetails);
-        logger.info("Admin [{}] registered new doctor [{}]", adminUser.getUserId(), dto.getUserId());
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
-    }
+		// Service should throw ResourceNotFoundException if deletion target is invalid
+		adminService.deleteUser(userId);
+		logger.info("Admin [{}] deleted user [{}]", adminUser.getUserId(), userId);
+		return ResponseEntity.noContent().build();
+	}
 
-    @PostMapping("/patients/register")
-    public ResponseEntity<UserResponseDTO> registerPatient(@Valid @RequestBody PatientRegisterRequestDTO registrationDetails, @AuthenticationPrincipal User adminUser) {
-        if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+	// ===================== II. REGISTRATION =====================
 
-        UserResponseDTO dto = adminService.registerNewPatient(registrationDetails);
-        logger.info("Admin [{}] registered new patient [{}]", adminUser.getUserId(), dto.getUserId());
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
-    }
+	// Note: The /admin/register path needs to be updated to /register to follow
+	// REST convention /api/admin/register
 
-    // ===================== III. DOCTOR MANAGEMENT =====================
-    
-    @GetMapping("/doctors")
-    public ResponseEntity<List<DoctorResponseDTO>> getAllDoctors(@AuthenticationPrincipal User adminUser) {
-        logger.info("Admin [{}] requested all doctors", adminUser.getUserId());
-        return ResponseEntity.ok(adminService.getAllDoctors());
-    }
+	@PostMapping("/register")
+	public ResponseEntity<AdminResponseDTO> registerAdmin(@Valid @RequestBody AdminRegisterDTO registrationDetails,
+			@AuthenticationPrincipal User adminUser) {
 
-    @GetMapping("/doctors/{doctorId}")
-    public ResponseEntity<DoctorResponseDTO> getDoctorById(@PathVariable Long doctorId, @AuthenticationPrincipal User adminUser) {
-        
-        // Service throws ResourceNotFoundException if doctorId is invalid
-        DoctorResponseDTO doctor = doctorService.findDoctorById(doctorId)
-            .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with ID: " + doctorId));
-        return ResponseEntity.ok(doctor);
-    }
+		// Only allow first admin to register without being authenticated (handled in
+		// service or security config)
+		// For existing admins, the @PreAuthorize handles the role check.
+		Long count = adminService.getCount();
+		if (count != 0 && adminUser == null) { // This block is hard to implement cleanly here. Better handled in the
+												// Service/Security layer
+			throw new AccessDeniedException("Only the first admin can be registered without authorization.");
+		}
 
-    @PutMapping("/doctors/{doctorId}")
-    public ResponseEntity<DoctorResponseDTO> updateDoctorProfile(
-            @PathVariable Long doctorId, 
-            @Valid @RequestBody DoctorProfileUpdateDTO updateDTO, 
-            @AuthenticationPrincipal User adminUser) {
+		if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 
-        // Service throws ResourceNotFoundException if doctorId is invalid
-        DoctorResponseDTO updated = adminService.updateDoctorProfile(doctorId, updateDTO);
-        logger.info("Admin [{}] updated doctor [{}]", adminUser.getUserId(), doctorId);
-        return ResponseEntity.ok(updated);
-    }
+		AdminResponseDTO dto = userService.registerAdmin(registrationDetails);
+		logger.info("Admin [{}] registered new admin [{}]", adminUser != null ? adminUser.getUserId() : "SYSTEM",
+				dto.getUserId());
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	}
 
-    @DeleteMapping("/doctors/{id}")
-    public ResponseEntity<Void> deleteDoctor(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
-        
-        // Service throws ResourceNotFoundException if deletion target is invalid
-        doctorService.deleteDoctor(id);
-        logger.info("Admin [{}] deleted doctor [{}]", adminUser.getUserId(), id);
-        return ResponseEntity.noContent().build();
-    }
+	@PostMapping("/doctors/register")
+	public ResponseEntity<UserResponseDTO> registerDoctor(
+			@Valid @RequestBody DoctorRegisterRequestDTO registrationDetails, @AuthenticationPrincipal User adminUser) {
+		if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 
-    // ===================== IV. PATIENT MANAGEMENT =====================
-    
-    @GetMapping("/patients")
-    public ResponseEntity<List<PatientResponseDTO>> getAllPatients(@AuthenticationPrincipal User adminUser) {
-        logger.info("Admin [{}] requested all patients", adminUser.getUserId());
-        return ResponseEntity.ok(adminService.getAllPatients());
-    }
+		UserResponseDTO dto = adminService.registerNewDoctor(registrationDetails);
+		logger.info("Admin [{}] registered new doctor [{}]", adminUser.getUserId(), dto.getUserId());
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	}
 
-    @GetMapping("/patients/{id}")
-    public ResponseEntity<PatientResponseDTO> getPatientById(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
-        
-        // Service throws ResourceNotFoundException if patientId is invalid
-        PatientResponseDTO patient = patientService.findPatientProfileByPatientId(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Patient not found with ID: " + id));
-        return ResponseEntity.ok(patient);
-    }
+	@PostMapping("/patients/register")
+	public ResponseEntity<UserResponseDTO> registerPatient(
+			@Valid @RequestBody PatientRegisterRequestDTO registrationDetails,
+			@AuthenticationPrincipal User adminUser) {
+		if (userService.findByEmail(registrationDetails.getEmail()).isPresent()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 
-    @PutMapping("/patients/{id}")
-    public ResponseEntity<PatientResponseDTO> updatePatientProfile(
-            @PathVariable long id, 
-            @RequestBody PatientUpdateRequestDTO updateRequestDTO, 
-            @AuthenticationPrincipal User adminUser) {
+		UserResponseDTO dto = adminService.registerNewPatient(registrationDetails);
+		logger.info("Admin [{}] registered new patient [{}]", adminUser.getUserId(), dto.getUserId());
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	}
 
-        // Service throws ResourceNotFoundException if patientId is invalid
-        PatientResponseDTO dto = patientService.updatePatientProfile(id, updateRequestDTO);
-        logger.info("Admin [{}] updated patient [{}]", adminUser.getUserId(), id);
-        return ResponseEntity.ok(dto);
-    }
+	// ===================== III. DOCTOR MANAGEMENT =====================
 
-    @DeleteMapping("/patients/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
-        
-        // Service throws ResourceNotFoundException if deletion target is invalid
-        patientService.deletePatient(id);
-        logger.info("Admin [{}] deleted patient [{}]", adminUser.getUserId(), id);
-        return ResponseEntity.noContent().build();
-    }
+	@GetMapping("/doctors")
+	public ResponseEntity<List<DoctorResponseDTO>> getAllDoctors(@AuthenticationPrincipal User adminUser) {
+		logger.info("Admin [{}] requested all doctors", adminUser.getUserId());
+		return ResponseEntity.ok(adminService.getAllDoctors());
+	}
 
-    // ===================== V. APPOINTMENT MANAGEMENT =====================
-    
-    @GetMapping("/appointments")
-    public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments(@AuthenticationPrincipal User adminUser) {
-        logger.info("Admin [{}] requested all appointments", adminUser.getUserId());
-        return ResponseEntity.ok(adminService.getAllAppointments());
-    }
+	@GetMapping("/doctors/{doctorId}")
+	public ResponseEntity<DoctorResponseDTO> getDoctorById(@PathVariable Long doctorId,
+			@AuthenticationPrincipal User adminUser) {
 
-    @GetMapping("/appointments/{id}")
-    public ResponseEntity<AppointmentResponseDTO> getAppointmentById(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
-        
-        // Service throws ResourceNotFoundException if appointment is missing or conversion fails
-        AppointmentResponseDTO dto = appointmentService.findAppointmentById(id).orElseThrow(() -> new ResourceNotFoundException("No appointment found : " + id));
-        return ResponseEntity.ok(dto);
-    }
+		// Service throws ResourceNotFoundException if doctorId is invalid
+		DoctorResponseDTO doctor = doctorService.findDoctorById(doctorId)
+				.orElseThrow(() -> new ResourceNotFoundException("Doctor not found with ID: " + doctorId));
+		return ResponseEntity.ok(doctor);
+	}
 
-    @PutMapping("/appointments/{appointmentId}/status")
-    public ResponseEntity<AppointmentResponseDTO> updateAppointmentStatus(
-            @PathVariable Long appointmentId,
-            @RequestParam AppointmentStatus newStatus,
-            @RequestParam(required = false) String remarks,
-            @AuthenticationPrincipal User adminUser) {
+	@PutMapping("/doctors/{doctorId}")
+	public ResponseEntity<DoctorResponseDTO> updateDoctorProfile(@PathVariable Long doctorId,
+			@Valid @RequestBody DoctorProfileUpdateDTO updateDTO, @AuthenticationPrincipal User adminUser) {
 
-        // Service throws ResourceNotFoundException if appointment is missing
-        AppointmentResponseDTO updatedAppointment = appointmentService.updateAppointmentStatus(appointmentId, newStatus, remarks);
-        return ResponseEntity.ok(updatedAppointment);
-    }
+		// Service throws ResourceNotFoundException if doctorId is invalid
+		DoctorResponseDTO updated = adminService.updateDoctorProfile(doctorId, updateDTO);
+		logger.info("Admin [{}] updated doctor [{}]", adminUser.getUserId(), doctorId);
+		return ResponseEntity.ok(updated);
+	}
 
-    @PostMapping("/appointments/{appointmentId}/cancel")
-    public ResponseEntity<Void> cancelAppointment(@PathVariable Long appointmentId, @AuthenticationPrincipal User adminUser) {
-        
-        // Service should throw a specific exception (e.g., IllegalStateException or ResourceNotFoundException)
-        appointmentService.cancelAppointment(appointmentId);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/doctors/{id}")
+	public ResponseEntity<Void> deleteDoctor(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
 
-    // ===================== VI. BILLING MANAGEMENT =====================
-    
-    @GetMapping("/billing")
-    public ResponseEntity<List<BillResponseDTO>> getAllBills(@AuthenticationPrincipal User adminUser) {
-        logger.info("Admin [{}] requested all bills", adminUser.getUserId());
-        return ResponseEntity.ok(adminService.getAllBills());
-    }
+		// Service throws ResourceNotFoundException if deletion target is invalid
+		doctorService.deleteDoctor(id);
+		logger.info("Admin [{}] deleted doctor [{}]", adminUser.getUserId(), id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @PostMapping("/billing/{billId}/pay")
-    public ResponseEntity<BillResponseDTO> recordPayment(@PathVariable Long billId, @AuthenticationPrincipal User adminUser) {
-        
-        // Service throws ResourceNotFoundException if bill is missing
-        BillResponseDTO updatedBill = billingService.recordPayment(billId);
-        return ResponseEntity.ok(updatedBill);
-    }
+	// ===================== IV. PATIENT MANAGEMENT =====================
 
-    // ===================== VII. COUNT MANAGEMENT =====================
-    
-    @GetMapping("/count")
-    public ResponseEntity<Long> getCount(@RequestParam String name, @AuthenticationPrincipal User adminUser) {
-        
-        Long count = switch (name.toLowerCase()) {
-            case "doctors" -> doctorService.getCount();
-            case "patients" -> patientService.getCount();
-            case "admins" -> adminService.getCount();
-            case "users" -> userService.getCount();
-            case "appointments" -> appointmentService.getCount();
-            case "bills" -> billingService.getCount();
-            default -> null;
-        };
+	@GetMapping("/patients")
+	public ResponseEntity<List<PatientResponseDTO>> getAllPatients(@AuthenticationPrincipal User adminUser) {
+		logger.info("Admin [{}] requested all patients", adminUser.getUserId());
+		return ResponseEntity.ok(adminService.getAllPatients());
+	}
 
-        if (count == null) {
-            logger.warn("Admin [{}] requested invalid count type: {}", adminUser.getUserId(), name);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+	@GetMapping("/patients/{id}")
+	public ResponseEntity<PatientResponseDTO> getPatientById(@PathVariable long id,
+			@AuthenticationPrincipal User adminUser) {
 
-        return ResponseEntity.ok(count);
-    }
+		// Service throws ResourceNotFoundException if patientId is invalid
+		PatientResponseDTO patient = patientService.findPatientProfileByPatientId(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Patient not found with ID: " + id));
+		return ResponseEntity.ok(patient);
+	}
+
+	@PutMapping("/patients/{id}")
+	public ResponseEntity<PatientResponseDTO> updatePatientProfile(@PathVariable long id,
+			@RequestBody PatientUpdateRequestDTO updateRequestDTO, @AuthenticationPrincipal User adminUser) {
+
+		// Service throws ResourceNotFoundException if patientId is invalid
+		PatientResponseDTO dto = patientService.updatePatientProfile(id, updateRequestDTO);
+		logger.info("Admin [{}] updated patient [{}]", adminUser.getUserId(), id);
+		return ResponseEntity.ok(dto);
+	}
+
+	@DeleteMapping("/patients/{id}")
+	public ResponseEntity<Void> deletePatient(@PathVariable long id, @AuthenticationPrincipal User adminUser) {
+
+		// Service throws ResourceNotFoundException if deletion target is invalid
+		patientService.deletePatient(id);
+		logger.info("Admin [{}] deleted patient [{}]", adminUser.getUserId(), id);
+		return ResponseEntity.noContent().build();
+	}
+
+	// ===================== V. APPOINTMENT MANAGEMENT =====================
+
+	@GetMapping("/appointments")
+	public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments(@AuthenticationPrincipal User adminUser) {
+		logger.info("Admin [{}] requested all appointments", adminUser.getUserId());
+		return ResponseEntity.ok(adminService.getAllAppointments());
+	}
+
+	@GetMapping("/appointments/{id}")
+	public ResponseEntity<AppointmentResponseDTO> getAppointmentById(@PathVariable long id,
+			@AuthenticationPrincipal User adminUser) {
+
+		// Service throws ResourceNotFoundException if appointment is missing or
+		// conversion fails
+		AppointmentResponseDTO dto = appointmentService.findAppointmentById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("No appointment found : " + id));
+		return ResponseEntity.ok(dto);
+	}
+
+	@PutMapping("/appointments/{appointmentId}/status")
+	public ResponseEntity<AppointmentResponseDTO> updateAppointmentStatus(@PathVariable Long appointmentId,
+			@RequestParam AppointmentStatus newStatus, @RequestParam(required = false) String remarks,
+			@AuthenticationPrincipal User adminUser) {
+
+		// Service throws ResourceNotFoundException if appointment is missing
+		AppointmentResponseDTO updatedAppointment = appointmentService.updateAppointmentStatus(appointmentId, newStatus,
+				remarks);
+		return ResponseEntity.ok(updatedAppointment);
+	}
+
+	@PostMapping("/appointments/{appointmentId}/cancel")
+	public ResponseEntity<Void> cancelAppointment(@PathVariable Long appointmentId,
+			@AuthenticationPrincipal User adminUser) {
+
+		// Service should throw a specific exception (e.g., IllegalStateException or
+		// ResourceNotFoundException)
+		appointmentService.cancelAppointment(appointmentId);
+		return ResponseEntity.noContent().build();
+	}
+
+	// ===================== VI. BILLING MANAGEMENT =====================
+
+	@GetMapping("/billing")
+	public ResponseEntity<List<BillResponseDTO>> getAllBills(@AuthenticationPrincipal User adminUser) {
+		logger.info("Admin [{}] requested all bills", adminUser.getUserId());
+		return ResponseEntity.ok(adminService.getAllBills());
+	}
+
+	@PostMapping("/billing/{billId}/pay")
+	public ResponseEntity<BillResponseDTO> recordPayment(@PathVariable Long billId,
+			@AuthenticationPrincipal User adminUser) {
+
+		// Service throws ResourceNotFoundException if bill is missing
+		BillResponseDTO updatedBill = billingService.recordPayment(billId);
+		return ResponseEntity.ok(updatedBill);
+	}
+
+	// ===================== VII. COUNT MANAGEMENT =====================
+
+	@GetMapping("/count")
+	public ResponseEntity<Long> getCount(@RequestParam String name, @AuthenticationPrincipal User adminUser) {
+
+		Long count = switch (name.toLowerCase()) {
+		case "doctors" -> doctorService.getCount();
+		case "patients" -> patientService.getCount();
+		case "admins" -> adminService.getCount();
+		case "users" -> userService.getCount();
+		case "appointments" -> appointmentService.getCount();
+		case "bills" -> billingService.getCount();
+		default -> null;
+		};
+
+		if (count == null) {
+			logger.warn("Admin [{}] requested invalid count type: {}", adminUser.getUserId(), name);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+
+		return ResponseEntity.ok(count);
+	}
 }

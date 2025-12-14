@@ -4,71 +4,73 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class DoctorResponseDTO {
-    private Long doctorId;
-    private String name;
-    private String specialization;
-    private String contactNumber;
-    private BigDecimal consultationFee;
-    private List<DoctorAvailabilityDTO> availabilities;
-    
-    // Constructors
-    public DoctorResponseDTO() {}
+	private Long doctorId;
+	private String name;
+	private String specialization;
+	private String contactNumber;
+	private BigDecimal consultationFee;
+	private List<DoctorAvailabilityDTO> availabilities;
 
-    public DoctorResponseDTO(Long doctorId, String name, String specialization, String contactNumber, BigDecimal consultationFee, List<DoctorAvailabilityDTO> availabilities) {
-        this.doctorId = doctorId;
-        this.name = name;
-        this.specialization = specialization;
-        this.contactNumber = contactNumber;
-        this.consultationFee = consultationFee;
-        this.availabilities = availabilities;
-    }
+	// Constructors
+	public DoctorResponseDTO() {
+	}
 
-    // Getters and Setters
-    public Long getDoctorId() {
-        return doctorId;
-    }
+	public DoctorResponseDTO(Long doctorId, String name, String specialization, String contactNumber,
+			BigDecimal consultationFee, List<DoctorAvailabilityDTO> availabilities) {
+		this.doctorId = doctorId;
+		this.name = name;
+		this.specialization = specialization;
+		this.contactNumber = contactNumber;
+		this.consultationFee = consultationFee;
+		this.availabilities = availabilities;
+	}
 
-    public void setDoctorId(Long doctorId) {
-        this.doctorId = doctorId;
-    }
+	// Getters and Setters
+	public Long getDoctorId() {
+		return doctorId;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setDoctorId(Long doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getSpecialization() {
-        return specialization;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setSpecialization(String specialization) {
-        this.specialization = specialization;
-    }
+	public String getSpecialization() {
+		return specialization;
+	}
 
-    public String getContactNumber() {
-        return contactNumber;
-    }
+	public void setSpecialization(String specialization) {
+		this.specialization = specialization;
+	}
 
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
+	public String getContactNumber() {
+		return contactNumber;
+	}
 
-    public BigDecimal getConsultationFee() {
-        return consultationFee;
-    }
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
 
-    public void setConsultationFee(BigDecimal consultationFee) {
-        this.consultationFee = consultationFee;
-    }
+	public BigDecimal getConsultationFee() {
+		return consultationFee;
+	}
 
-    public List<DoctorAvailabilityDTO> getAvailabilities() {
-        return availabilities;
-    }
+	public void setConsultationFee(BigDecimal consultationFee) {
+		this.consultationFee = consultationFee;
+	}
 
-    public void setAvailabilities(List<DoctorAvailabilityDTO> availabilities) {
-        this.availabilities = availabilities;
-    }
+	public List<DoctorAvailabilityDTO> getAvailabilities() {
+		return availabilities;
+	}
+
+	public void setAvailabilities(List<DoctorAvailabilityDTO> availabilities) {
+		this.availabilities = availabilities;
+	}
 }

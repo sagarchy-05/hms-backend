@@ -5,101 +5,103 @@ import java.time.LocalDate;
 import com.genc.hms.enums.Gender;
 
 public class PatientResponseDTO {
-    private Long patientId;
-    private Long userId;
-    private String email;
-    private String name;
-    private LocalDate dob;
-    private String contactNumber;
-    private String address;
-    private Gender gender;
-    private String medicalHistory;
+	private Long patientId;
+	private Long userId;
+	private String email;
+	private String name;
+	private LocalDate dob;
+	private String contactNumber;
+	private String address;
+	private Gender gender;
+	private String medicalHistory;
 
-    // Constructors
-    public PatientResponseDTO() {}
+	// Constructors
+	public PatientResponseDTO() {
+	}
 
-    public PatientResponseDTO(Long patientId, Long userId, String email, String name, LocalDate dob, String contactNumber, String address, Gender gender, String medicalHistory) {
-        this.patientId = patientId;
-        this.userId = userId;
-        this.email = email;
-        this.name = name;
-        this.dob = dob;
-        this.contactNumber = contactNumber;
-        this.address = address;
-        this.gender = gender;
-        this.medicalHistory = medicalHistory;
-    }
+	public PatientResponseDTO(Long patientId, Long userId, String email, String name, LocalDate dob,
+			String contactNumber, String address, Gender gender, String medicalHistory) {
+		this.patientId = patientId;
+		this.userId = userId;
+		this.email = email;
+		this.name = name;
+		this.dob = dob;
+		this.contactNumber = contactNumber;
+		this.address = address;
+		this.gender = gender;
+		this.medicalHistory = medicalHistory;
+	}
 
-    // Getters and Setters
-    public Long getPatientId() {
-        return patientId;
-    }
+	// Getters and Setters
+	public Long getPatientId() {
+		return patientId;
+	}
 
-    public void setPatientId(Long patientId) {
-        this.patientId = patientId;
-    }
+	public void setPatientId(Long patientId) {
+		this.patientId = patientId;
+	}
 
-    public Long getUserId() {
-        return userId;
-    }
+	public Long getUserId() {
+		return userId;
+	}
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public LocalDate getDob() {
-        return dob;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
+	public LocalDate getDob() {
+		return dob;
+	}
 
-    public String getContactNumber() {
-        return contactNumber;
-    }
+	public void setDob(LocalDate dob) {
+		this.dob = dob;
+	}
 
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
-    }
+	public String getContactNumber() {
+		return contactNumber;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public Gender getGender() {
-        return gender;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
+	public Gender getGender() {
+		return gender;
+	}
 
-    public String getMedicalHistory() {
-        return medicalHistory;
-    }
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
 
-    public void setMedicalHistory(String medicalHistory) {
-        this.medicalHistory = medicalHistory;
-    }
+	public String getMedicalHistory() {
+		return medicalHistory;
+	}
+
+	public void setMedicalHistory(String medicalHistory) {
+		this.medicalHistory = medicalHistory;
+	}
 }

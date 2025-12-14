@@ -15,7 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**") // Apply CORS policy to all API endpoints
-				.allowedOrigins("http://localhost:5500") // Permitted frontend origins during development
+				.allowedOrigins("http://localhost:5500", "https://jeevan-hms.vercel.app/") // Permitted frontend origins during development
 				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // HTTP methods allowed for cross-origin
 																			// requests
 				.allowedHeaders("*").allowCredentials(true); // Enables cookies or authentication headers to be sent
